@@ -22,5 +22,13 @@ jobs:
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
         task-definition: task-definition.json
-        container-name: my-container
+        container-name: GO
         image: drack1997/ciproject:ecs
+        
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: Servico_API-GO
+        cluster: API-Go
+        wait-for-service-stability: true
