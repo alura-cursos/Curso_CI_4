@@ -23,7 +23,7 @@ jobs:
       with:
         task-definition: task-definition.json
         container-name: GO
-        image: drack1997/ciproject:ecs
+        image: drack1997/ciproject:${{github.run_number}}
         
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
