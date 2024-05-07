@@ -42,4 +42,4 @@ jobs:
     # Push is a shorthand for --output=type=registry
         push: true
     # List of tags
-        tags: drack1997/ciproject:${{github.ref_name}}
+        tags: drack1997/ciproject:ecs${{github.ref_name}}
