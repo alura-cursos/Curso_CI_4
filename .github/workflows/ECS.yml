@@ -8,3 +8,6 @@ jobs:
   EC2:
     runs-on: ubuntu-latest
     steps:
+    - name: Obtendo arquivo da tarefa
+    - run: |
+        aws ecs describe-task-definition --task-definition Tafera_API-GO my-task-definition-family --query taskDefinition > task-definition.json
