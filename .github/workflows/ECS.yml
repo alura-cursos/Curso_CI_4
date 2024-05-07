@@ -8,11 +8,12 @@ jobs:
   ECS:
     runs-on: ubuntu-latest
     steps:
-    - name: Obtendo arquivo da tarefa
-    - run: aws ecs describe-task-definition --task-definition Tafera_API-GO my-task-definition-family --query taskDefinition > task-definition.json
     - name: Configurando credencias da AWS
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.ID_CHAVE_ACESSO }}
         aws-secret-access-key: ${{ secrets.CHAVE_SECRETA }}
         aws-region: us-east-2
+        
+    - name: Obtendo arquivo da tarefa
+    - run: aws ecs describe-task-definition --task-definition Tafera_API-GO my-task-definition-family --query taskDefinition > task-definition.json
