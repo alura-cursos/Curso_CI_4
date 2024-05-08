@@ -17,6 +17,7 @@ jobs:
         
     - name: Obtendo arquivo da tarefa
     - run: aws ecs describe-task-definition --task-definition Tafera_API-GO my-task-definition-family --query taskDefinition > task-definition.json
+    
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -24,6 +25,13 @@ jobs:
         task-definition: task-definition.json
         container-name: GO
         image: drack1997/ciproject:${{github.run_number}}
+        environment-variables: |
+          HOST=${{ secrets.DBHOST }}
+          USER=${{ secrets.DBUSER }}
+          PASSWORD=${{ secrets.DBPASSWORD }}
+          DBNAME=${{ secrets.DBNAME }}
+          DBPORT=${{ secrets.DBPORT }}
+          PORT=8000
         
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
