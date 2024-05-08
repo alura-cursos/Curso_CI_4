@@ -17,6 +17,9 @@ jobs:
         
     - name: Obtendo arquivo da tarefa
       run: aws ecs describe-task-definition --task-definition Tafera_API-GO my-task-definition-family --query taskDefinition > task-definition.json
+
+    - name: copia de task-definition
+      run: cp task-definition.json task-definition.json.old
     
     - name: Fill in the new image ID in the Amazon ECS task definition
       id: task-def
@@ -37,6 +40,18 @@ jobs:
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: Servico_API-GO
+        cluster: API-Go
+        wait-for-service-stability: true
+
+    - name: Requisição
+      continue-on-error: true
+      run: sleep 30s ; wget LB-API-GO-1292827401.us-east-2.elb.amazonaws.com:8000/bruno
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: task-definition.json.old
         service: Servico_API-GO
         cluster: API-Go
         wait-for-service-stability: true
