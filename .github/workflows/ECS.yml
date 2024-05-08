@@ -46,9 +46,10 @@ jobs:
 
     - name: Requisição
       continue-on-error: true
-      run: sleep 30s ; wget LB-API-GO-1292827401.us-east-2.elb.amazonaws.com:8000/bruno
+      run: echo "RESQUEST=0" >> $GOTHUB_ENV ; sleep 30s ; wget LB-API-GO-1292827401.us-east-2.elb.amazonaws.com:8000/bruno || echo "RESQUEST=1" >> $GOTHUB_ENV
 
     - name: Deploy Amazon ECS task definition
+      if: ${{ env.REQUEST !=0 }}
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
         task-definition: task-definition.json.old
