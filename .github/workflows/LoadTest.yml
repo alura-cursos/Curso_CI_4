@@ -34,7 +34,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5.1.0
       with:
-        python-version: 3.10
+        python-version: "3.10"
         
     - uses: BSFishy/pip-action@v1
       with:
@@ -46,7 +46,7 @@ jobs:
         echo "class UserTasks(TaskSet):" >> locustpfile.py
         echo "  @task(1)" >> locustpfile.py
         echo "  def index(self):" >> locustpfile.py
-        echo "      self.client.get("/bruno")" >> locustpfile.py
+        echo '      self.client.get("/bruno")' >> locustpfile.py
         echo "" >> locustpfile.py
         echo "class WebsiteUser(HttpUser):" >> locustpfile.py
         echo "  tasks = [UserTasks]" >> locustpfile.py
