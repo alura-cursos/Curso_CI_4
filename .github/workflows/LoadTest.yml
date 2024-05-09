@@ -17,3 +17,41 @@ jobs:
         aws-access-key-id: ${{ secrets.ID_CHAVE_ACESSO }}
         aws-secret-access-key: ${{ secrets.CHAVE_SECRETA }}
         aws-region: us-east-2
+        
+    - run: git clone https://github.com/DRACKRAGE/Infra_CI
+
+    - name: HashiCorp - Setup Terraform
+      uses: hashicorp/setup-terraform@v2.0.3
+      
+    - run: terrform -cdhr=Infra_CI/env/Homolog init
+    
+    - run: terrform -cdhr=Infra_CI/env/Homolog destroy -auot-approve
+    
+    - run: terrform -cdhr=Infra_CI/env/Homolog apply -auto-approve
+
+    - run: echo "$(terrform -cdhr=Infra_CI/env/Homolog output -raw IP_alb)"
+      id: URL
+      
+    - name: Setup Python
+      uses: actions/setup-python@v5.1.0
+      with:
+        python-version: 3.10
+        
+    - uses: BSFishy/pip-action@v1
+      with:
+        packages: |
+          locust
+    - run: | 
+        echo "from locust import HttpUser, TaskSet, task, between" >> locustpfile.py
+        echo "" >> locustpfile.py
+        echo "class UserTasks(TaskSet):" >> locustpfile.py
+        echo "  @task(1)" >> locustpfile.py
+        echo "  def index(self):" >> locustpfile.py
+        echo "      self.client.get("/bruno")" >> locustpfile.py
+        echo "" >> locustpfile.py
+        echo "class WebsiteUser(HttpUser):" >> locustpfile.py
+        echo "  tasks = [UserTasks]" >> locustpfile.py
+        echo "  wait_time = between(1, 5)" >> locustpfile.py
+
+    - name: Roda teste de carga
+      run: sleep 60s ; locust -f locustpfile.py --headless -u 10 -r 5 --run-time 60s -H http://${{ steps.URL.outputs.stdout }}
