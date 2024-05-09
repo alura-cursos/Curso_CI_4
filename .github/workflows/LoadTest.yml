@@ -1,0 +1,19 @@
+name: Entrega continua
+
+on:
+  workflow_call:
+
+jobs:
+
+  ECS:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    
+    - name: Configurando credencias da AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.ID_CHAVE_ACESSO }}
+        aws-secret-access-key: ${{ secrets.CHAVE_SECRETA }}
+        aws-region: us-east-2
