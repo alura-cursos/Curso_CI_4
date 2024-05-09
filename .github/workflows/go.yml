@@ -69,3 +69,9 @@ jobs:
     #needs: build
     #uses: ./.github/workflows/EC2.yml
     #secrets: inherit
+    
+  LoadTest:
+    needs: docker
+    if: ${{ github.ref_name == 'Homolog'}}
+    uses: ./.github/workflows/LoadTest.yml
+    secrets: inherit
