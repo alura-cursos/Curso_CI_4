@@ -8,7 +8,7 @@ jobs:
   ECS:
     runs-on: ubuntu-latest
     steps:
-    - name: Configurando credencias da AWS
+    - name: Configurando credenciais da AWS
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.ID_CHAVE_ACESSO }}
@@ -16,7 +16,7 @@ jobs:
         aws-region: us-east-2
         
     - name: Obtendo arquivo da tarefa
-      run: aws ecs describe-task-definition --task-definition Tafera_API-GO my-task-definition-family --query taskDefinition > task-definition.json
+      run: aws ecs describe-task-definition --task-definition Tafera_API-GO --query taskDefinition > task-definition.json
 
     - name: copia de task-definition
       run: cp task-definition.json task-definition.json.old
@@ -46,7 +46,7 @@ jobs:
 
     - name: Requisição
       continue-on-error: true
-      run: echo "RESQUEST=0" >> $GOTHUB_ENV ; sleep 30s ; wget LB-API-GO-1292827401.us-east-2.elb.amazonaws.com:8000/bruno || echo "RESQUEST=1" >> $GOTHUB_ENV
+      run: echo "RESQUEST=0" >> $GITHUB_ENV ; sleep 30s ; wget LB-API-GO-1292827401.us-east-2.elb.amazonaws.com:8000/bruno || echo "RESQUEST=1" >> $GITHUB_ENV
 
     - name: Deploy Amazon ECS task definition
       if: ${{ env.REQUEST !=0 }}
