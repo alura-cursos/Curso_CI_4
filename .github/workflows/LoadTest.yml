@@ -24,7 +24,7 @@ jobs:
       
     - run: terrform -cdhr=Infra_CI/env/Homolog init
     
-    - run: terrform -cdhr=Infra_CI/env/Homolog destroy -auot-approve
+    - run: terrform -cdhr=Infra_CI/env/Homolog destroy -auto-approve
     
     - run: terrform -cdhr=Infra_CI/env/Homolog apply -auto-approve
 
