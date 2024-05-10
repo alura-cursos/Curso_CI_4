@@ -25,6 +25,9 @@ jobs:
     - run: terrform -cdhr=Infra_CI_Kubernetes/env/Homolog init
 
     - run: terrform -cdhr=Infra_CI_Kubernetes/env/Homolog apply -auto-approve
+
+    - run: echo "$terrform -cdhr=Infra_CI_Kubernetes/env/Homolog output -raw IP_db"
+      id: URL
     
     - name: Kubectl tool installer
       uses: Azure/setup-kubectl@v4.0.0
@@ -34,3 +37,12 @@ jobs:
     - run: aws eks update-kubeconfig --region us-west-2 --name homolog2
 
     - run: kubectl get svc
+
+    - run: kubectl create secret generic dbhost --from-literal=HOST=${{steps.URL.output.stdout}}
+    - run: kubectl create secret generic dbport --from-literal=DBPORT=${{secrets.DBPORT}}
+    - run: kubectl create secret generic dbuser --from-literal=USER=${{secrets.DBUSER}}
+    - run: kubectl create secret generic dbpassword --from-literal=PASSWORD=${{secrets.DBPASSWORD}}
+    - run: kubectl create secret geberuc port --from-literal=DBNAME=${{secrets.DBNAME}}
+    - run: kubectl create secret geberuc port --from-literal=PORT=8000
+
+    - run: kubectl apply -f Infra_CI_Kubernetes/go.yaml
