@@ -1,0 +1,29 @@
+name: Kubernetes
+
+on:
+  workflow_call:
+
+jobs:
+
+  EKS:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configurando credencias da AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.ID_CHAVE_ACESSO }}
+        aws-secret-access-key: ${{ secrets.CHAVE_SECRETA }}
+        aws-region: us-east-2
+
+    - run: git clone https://github.com/DRACKRAGE/Infra_CI_Kubernetes.git
+    
+    - name: HashiCorp - Setup Terraform
+      uses: hashicorp/setup-terraform@v2.0.3
+      
+    - run: terrform -cdhr=Infra_CI_Kubernetes/env/Homolog init
+
+    - run: terrform -cdhr=Infra_CI_Kubernetes/env/Homolog apply -auto-approve
+    
+    
