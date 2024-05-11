@@ -52,3 +52,5 @@ jobs:
     - run: kubectl create secret geberuc port --from-literal=PORT=8000
 
     - run: kubectl apply -f Infra_CI_Kubernetes/go.yaml
+
+    - run: kubectl set image deployment/go-api go=drack1997/ciproject:${{github.run_number}}
