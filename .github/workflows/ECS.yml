@@ -1,0 +1,58 @@
+name: Entrega continua
+
+on:
+  workflow_call:
+
+jobs:
+
+  ECS:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Configurando credenciais da AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.ID_CHAVE_ACESSO }}
+        aws-secret-access-key: ${{ secrets.CHAVE_SECRETA }}
+        aws-region: us-east-2
+        
+    - name: Obtendo arquivo da tarefa
+      run: aws ecs describe-task-definition --task-definition Tafera_API-GO --query taskDefinition > task-definition.json
+
+    - name: copia de task-definition
+      run: cp task-definition.json task-definition.json.old
+    
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: task-definition.json
+        container-name: GO
+        image: drack1997/ciproject:${{github.run_number}}
+        environment-variables: |
+          HOST=${{ secrets.DBHOST }}
+          USER=${{ secrets.DBUSER }}
+          PASSWORD=${{ secrets.DBPASSWORD }}
+          DBNAME=${{ secrets.DBNAME }}
+          DBPORT=${{ secrets.DBPORT }}
+          PORT=8000
+        
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: Servico_API-GO
+        cluster: API-Go
+        wait-for-service-stability: true
+
+    - name: Requisição
+      continue-on-error: true
+      run: echo "RESQUEST=0" >> $GITHUB_ENV ; sleep 30s ; wget LB-API-GO-1292827401.us-east-2.elb.amazonaws.com:8000/bruno || echo "RESQUEST=1" >> $GITHUB_ENV
+
+    - name: Deploy Amazon ECS task definition
+      if: ${{ env.REQUEST !=0 }}
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: task-definition.json.old
+        service: Servico_API-GO
+        cluster: API-Go
+        wait-for-service-stability: true
